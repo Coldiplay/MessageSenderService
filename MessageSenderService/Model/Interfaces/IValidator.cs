@@ -1,6 +1,4 @@
-﻿using MediatR;
-
-namespace MessageSenderService.Model.Interfaces
+﻿namespace MessageSenderService.Model.Interfaces
 {
     /// <summary>
     /// Интерфейс для валидаторов запросов

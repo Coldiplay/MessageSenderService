@@ -9,19 +9,19 @@
         /// Обёртка для возвращения http кода ошибки
         /// </summary>
         /// <param name="exception">Ошибка, тип которой трактуем в http статус код</param>
-        public abstract static int GetErrorCode(Exception exception);
+        abstract static int GetErrorCode(Exception exception);
 
         /// <summary>
         /// Обёртка для текста ошибки
         /// </summary>
         /// <param name="exception">Ошибка, тип которой трактуем в сообщение</param>
-        public abstract static string GetErrorMessage(Exception exception);
+        abstract static string GetErrorMessage(Exception exception);
 
         /// <summary>
         /// Метод для потенциального отлова ошибки
         /// </summary>
         /// <param name="httpContext">Контекст запроса</param>
-        public Task InvokeAsync(HttpContext httpContext);
+        Task InvokeAsync(HttpContext httpContext);
 
         /// <summary>
         /// Метод вызываемый при ловли ошибки
@@ -29,6 +29,6 @@
         /// <param name="httpContext">Контекст запроса</param>
         /// <param name="exception">Отловленная ошибка</param>
         /// <param name="isDevelopment">Находится ли окружение в среде разработки</param>
-        public abstract static Task HandleExceptionAsync(HttpContext httpContext, Exception exception, bool isDevelopment);
+        abstract static Task HandleExceptionAsync(HttpContext httpContext, Exception exception, bool isDevelopment);
     }
 }

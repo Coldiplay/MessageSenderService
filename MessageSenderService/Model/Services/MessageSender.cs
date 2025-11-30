@@ -1,4 +1,6 @@
 ﻿using MessageSenderService.Model.Interfaces;
+using MessageSenderService.Model.MiddleWare;
+using MessageSenderService.Model.ResponseClass;
 
 namespace MessageSenderService.Model.Services
 {
@@ -15,17 +17,20 @@ namespace MessageSenderService.Model.Services
         /// </summary>
         /// <param name="telephone">Телефон, на который приходит сообщение</param>
         /// <param name="message">Отправляемое сообщение</param>
-        /// <returns>Json-объект ответа sms.ru</returns>
+        /// <returns>Класс ответа, указанный при вызове метода</returns>
         /// <exception cref="ArgumentNullException">При фееричном сценарии, что мы не смогли отправить запрос на sms.ru из-за непредвиденных обстоятельств</exception>
-        public async Task<object> SendAsync(string telephone, string message)
+        public async Task<RequestResult> SendAsync(string telephone, string message)
         {
-            //Отправляем сообщение через sms.ru и получаем json ответ
-            var response = await _httpClient.GetFromJsonAsync<object>($"sms/send?api_id={Config.SMS_API}&to={telephone}&msg={message}&json=1");
+            //Отправляем сообщение через sms.ru, получаем json ответ и конвертируем его в класс ответа
+            var response = await _httpClient.GetAsync($"sms/send?api_id={Config.SMS_API}&to={telephone}&msg={message}&json=1");
+            RequestResult resultFromJson = await response.Content.ReadFromJsonAsync<RequestResult>();
+            if (!response.IsSuccessStatusCode || resultFromJson is null || resultFromJson.Status.Equals("ERROR", StringComparison.OrdinalIgnoreCase) || resultFromJson.PhonesMessageResults.Any(s => s.Value.Status_Code == Enums.ResponseOnSendRequest.Error))
+            {
+                // TODO: создать обработку кастомных ошибок
+                throw new CustomException();
+            }
 
-            if (response is null)
-                throw new ArgumentNullException("Не удалось подключится к сервису отправки сообщений");
-
-            return response;
+            return resultFromJson;
         }
     }
 }

@@ -1,5 +1,7 @@
 using MediatR;
 using MessageSenderService.CQRS;
+using MessageSenderService.Model;
+using MessageSenderService.Model.Enums;
 using MessageSenderService.Model.Interfaces;
 using MessageSenderService.Model.MiddleWare;
 using MessageSenderService.Model.Validators;
@@ -30,16 +32,13 @@ namespace MessageSenderService
             {
                 var httpClient = new HttpClient
                 {
-                    BaseAddress = new Uri("https://sms.ru/")
+                    BaseAddress = new Uri(Config.SMS_BASE_ADRESS)
                 };
                 return httpClient;
             });
 
-
             //Добавление валидатора для комманды
             builder.Services.AddTransient<IValidator<SendMessageCommand>, ValidatorSendMessageCommand>();
-
-
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
