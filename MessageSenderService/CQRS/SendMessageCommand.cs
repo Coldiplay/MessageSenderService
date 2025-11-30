@@ -1,13 +1,12 @@
 ﻿using MediatR;
 using MessageSenderService.Model.Interfaces;
-using MessageSenderService.Model.ResponseClass;
 
 namespace MessageSenderService.CQRS
 {
     /// <summary>
     /// Комманда-запрос отправки сообщения
     /// </summary>
-    public class SendMessageCommand : IRequest<RequestResult>
+    public class SendMessageCommand<TResponse> : IRequest<TResponse> where TResponse : class, new()
     {
         public string Telephone { get; set; }
         public string Message { get; set; }
@@ -16,12 +15,12 @@ namespace MessageSenderService.CQRS
         /// Обработчик комманды-запроса
         /// </summary>
         /// <param name="messageSender">Сервис отправки сообщений</param>
-        public class SendMessageCommandHandler(IMessageSender messageSender) : IRequestHandler<SendMessageCommand, RequestResult>
+        public class SendMessageCommandHandler(IMessageSender messageSender) : IRequestHandler<SendMessageCommand<TResponse>, TResponse>
         {
-            public async Task<RequestResult> Handle(SendMessageCommand request, CancellationToken cancellationToken)
+            public async Task<TResponse> Handle(SendMessageCommand<TResponse> request, CancellationToken cancellationToken)
             {
                 //Получаем ответ от sms.ru
-                RequestResult? response = await messageSender.SendAsync(request.Telephone, request.Message);
+                var response = await messageSender.SendAsync<TResponse>(request.Telephone, request.Message);
                 //Потом нужно сдлеать обёртку json-а
                 return response;
             }

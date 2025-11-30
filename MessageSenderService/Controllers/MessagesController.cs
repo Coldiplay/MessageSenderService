@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using MessageSenderService.CQRS;
+using MessageSenderService.Model.ResponseClass;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessageSenderService.Controllers
@@ -18,7 +19,7 @@ namespace MessageSenderService.Controllers
         public async Task<IActionResult> Send(string telephone, string message = "")
         {
             //Медиатором запускаем и ждём выполнение команды
-            var result = await _mediator.Send(new SendMessageCommand() { Telephone = telephone, Message = message});
+            var result = await _mediator.Send(new SendMessageCommand<RequestResult>() { Telephone = telephone, Message = message});
             // Потом изменить
             return Ok(result);
         }

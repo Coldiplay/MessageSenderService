@@ -7,7 +7,7 @@ namespace MessageSenderService.Model.Validators
     /// <summary>
     /// Валидатор команды отправки сообщения
     /// </summary>
-    public partial class ValidatorSendMessageCommand : IValidator<SendMessageCommand>
+    public partial class ValidatorSendMessageCommand<TResponse> : IValidator<SendMessageCommand<TResponse>> where TResponse : class, new()
     {
         /// <summary>
         /// Валидируем комманду отправки сообщения
@@ -15,7 +15,7 @@ namespace MessageSenderService.Model.Validators
         /// <param name="request">Наша комманда-запрос</param>
         /// <param name="ct"></param>
         /// <returns>Список строк-ошибок</returns>
-        public async Task<IEnumerable<string>> ValidateAsync(SendMessageCommand request, CancellationToken ct)
+        public async Task<IEnumerable<string>> ValidateAsync(SendMessageCommand<TResponse> request, CancellationToken ct)
         {
             List<string> fails = [];
             //Если сообщение пустое или состоит только из пробелов

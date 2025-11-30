@@ -1,9 +1,8 @@
 using MediatR;
 using MessageSenderService.CQRS;
-using MessageSenderService.Model;
-using MessageSenderService.Model.Enums;
 using MessageSenderService.Model.Interfaces;
 using MessageSenderService.Model.MiddleWare;
+using MessageSenderService.Model.ResponseClass;
 using MessageSenderService.Model.Validators;
 using Scalar.AspNetCore;
 using System.Reflection;
@@ -38,7 +37,7 @@ namespace MessageSenderService
             });
 
             //Добавление валидатора для комманды
-            builder.Services.AddTransient<IValidator<SendMessageCommand>, ValidatorSendMessageCommand>();
+            builder.Services.AddTransient<IValidator<SendMessageCommand<RequestResult>>, ValidatorSendMessageCommand<RequestResult>>();
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
