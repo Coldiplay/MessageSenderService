@@ -1,6 +1,4 @@
-﻿using MessageSenderService.Model.ResponseClass;
-
-namespace MessageSenderService.Model.Interfaces
+﻿namespace MessageSenderService.Model.Interfaces
 {
     /// <summary>
     /// Интерфейс сервиса отправки сообщений
@@ -13,6 +11,6 @@ namespace MessageSenderService.Model.Interfaces
         /// <param name="telephone">Телефон, на который придёт сообщение</param>
         /// <param name="message">Сообщение</param>
         /// <returns>Возвращает ответ от отправки сообщения</returns>
-        Task<RequestResult> SendAsync(string telephone, string message);
+        Task<TResponse> SendAsync<TResponse>(string telephone, string message) where TResponse : IResponseResult, new();
     }
 }

@@ -1,12 +1,12 @@
+using System.Reflection;
 using MediatR;
 using MessageSenderService.CQRS;
-using MessageSenderService.Model;
-using MessageSenderService.Model.Enums;
 using MessageSenderService.Model.Interfaces;
 using MessageSenderService.Model.MiddleWare;
+using MessageSenderService.Model.ResponseClass;
+using MessageSenderService.Model.Services;
 using MessageSenderService.Model.Validators;
 using Scalar.AspNetCore;
-using System.Reflection;
 
 namespace MessageSenderService
 {
@@ -20,25 +20,29 @@ namespace MessageSenderService
 
             //Добавление обработчика валидаторов
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidatorBehavior<,>));
-            
+
             //Добавление медиатора
-            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+            builder.Services.AddMediatR(cfg =>
+            {
+                cfg.RegisterGenericHandlers = true;
+                cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly());
+            });
 
             //Добавление самого сервиса отправки сообщений
-            builder.Services.AddScoped<IMessageSender, Model.Services.MessageSender>();
+            builder.Services.AddScoped<IMessageSender, MessageSender>();
 
             //Добавление синглтона клиента для отправки сообщения через sms.ru
-            builder.Services.AddSingleton<HttpClient>(opt =>
+            builder.Services.AddSingleton<HttpClient>(_ =>
             {
                 var httpClient = new HttpClient
                 {
-                    BaseAddress = new Uri(Config.SMS_BASE_ADRESS)
+                    BaseAddress = new Uri(Config.SmsBaseAddress)
                 };
                 return httpClient;
             });
 
             //Добавление валидатора для комманды
-            builder.Services.AddTransient<IValidator<SendMessageCommand>, ValidatorSendMessageCommand>();
+            builder.Services.AddTransient<IValidator<SendMessageCommand<SendMessageResult>>, ValidatorSendMessageCommand<SendMessageResult>>();
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -62,7 +66,7 @@ namespace MessageSenderService
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }

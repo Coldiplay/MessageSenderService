@@ -2,7 +2,7 @@
 {
     public class CustomException : Exception
     {
-        public int Error_Code { get; set; }
-        public string Error_Message { get; set; }
+        public int ErrorCode { get; set; }
+        public string ErrorMessage { get; set; } = "Неизвестная ошибка";
     }
 }

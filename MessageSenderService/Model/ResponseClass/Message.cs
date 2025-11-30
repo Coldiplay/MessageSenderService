@@ -1,16 +1,17 @@
 ﻿using MessageSenderService.Model.Enums;
+using MessageSenderService.Model.Interfaces;
 using System.Text.Json.Serialization;
 
 namespace MessageSenderService.Model.ResponseClass
 {
-    public class RequestResult
+    public class SendMessageResult : IResponseResult
     {
         [JsonPropertyName("status")]
         public string Status { get; set; } = "ERROR";
         [JsonPropertyName("status_code")]
-        public ResponseOnSendRequest Status_Code { get; set; }
+        public ResponseOnSendRequest StatusCode { get; set; }
         [JsonPropertyName("sms")]
-        public Dictionary<string, MessageResult> PhonesMessageResults { get; set; } = [];
+        public Dictionary<string, PhoneMessageResult> PhonesMessageResults { get; set; } = [];
         [JsonPropertyName("balance")]
         public double Balance { get; set; }
 
@@ -24,16 +25,16 @@ namespace MessageSenderService.Model.ResponseClass
         }
     }
 
-    public class MessageResult
+    public class PhoneMessageResult
     {
         [JsonPropertyName("status")]
         public string Status { get; set; } = "ERROR";
         [JsonPropertyName("status_code")]
-        public ResponseOnSendRequest Status_Code { get; set; }
+        public ResponseOnSendRequest StatusCode { get; set; }
         [JsonPropertyName("sms_id")]
-        public string? Sms_ID { get; set; } = null;
+        public string? SmsId { get; set; } = null;
         [JsonPropertyName("status_text")]
-        public string? Status_Text { get; set; } = null;
+        public string? StatusText { get; set; } = null;
 
     }
 

@@ -4,7 +4,7 @@
     /// Интерфейс для валидаторов запросов
     /// </summary>
     /// <typeparam name="TRequest">Запрос команды, который проверяет этот валидатор</typeparam>
-    public interface IValidator<TRequest>
+    public interface IValidator<in TRequest>
     {
         /// <summary>
         /// Валидирование запроса

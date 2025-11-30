@@ -32,8 +32,7 @@ namespace MessageSenderService.Model.Validators
                 //На каждом валидаторе проверяем запросы
                 var failuresInValidator = await validator.ValidateAsync(request, cancellationToken);
                 //Если ответ не пуст, то в ошибки записываем все ошибки, которые были в валидаторе
-                if (failuresInValidator is not null)
-                    failures.AddRange(failuresInValidator);
+                failures.AddRange(failuresInValidator);
             }
             //При ошибке/ошибках кидаем исключение валидации с сообщением в виде всех ошибок
             if (failures.Count > 0)
