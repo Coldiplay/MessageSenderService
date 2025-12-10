@@ -1,26 +1,20 @@
 ﻿using MediatR;
-using MessageSenderService.CQRS;
-using MessageSenderService.Model.ResponseClass;
+using MessageSenderService.Model.Middleware;
+using MessageSenderService.Tools;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessageSenderService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MessagesController : ControllerBase
+    public class MessagesController(IMediator mediator) : ControllerBase
     {
-        public MessagesController(IMediator mediator) 
+        [HttpPost("[action]/{commandName}")]
+        public async Task<IActionResult> Execute(string commandName, params object[]? parameters)
         {
-            _mediator = mediator;
-        }
-        private readonly IMediator _mediator;
-
-        [HttpPost("[action]")]
-        public async Task<IActionResult> Send(string telephone, string message = "")
-        {
-            //Медиатором запускаем и ждём выполнение команды
-            var result = await _mediator.Send(new SendMessageCommand<SendMessageResult>() { Telephone = telephone, Message = message});
-            // Потом изменить
+            var command = TypesManager.GetCommand(commandName, HttpContext.RequestServices, parameters) ?? 
+                throw new CustomException() { ErrorCode = 404, ErrorMessage= "Данный метод не найден"};
+            var result = await mediator.Send(command);
             return Ok(result);
         }
     }

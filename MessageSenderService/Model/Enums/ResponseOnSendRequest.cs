@@ -12,7 +12,7 @@
         MessageAccepted = 100,
         /// <summary>Сообщение передается оператору</summary>
         MessageGetsSendedToOperator = 101,
-        /// <summary> 	Сообщение отправлено (в пути)</summary>
+        /// <summary>Сообщение отправлено (в пути)</summary>
         MessageGetsSended = 102,
         /// <summary>Сообщение доставлено</summary>
         MessageDelivered = 103,
@@ -31,7 +31,7 @@
         /// <summary>Не может быть доставлено: не найден маршрут на данный номер</summary>
         NotFoundWayToPhone = 150,
         /// <summary>Неправильный api_id.</summary>
-        WrongID = 200,
+        WrongId = 200,
         /// <summary>Не хватает средств на лицевом счету.</summary>
         OutOfMoney = 201,
         /// <summary>Неправильно указан получатель.</summary>
@@ -51,7 +51,7 @@
         /// <summary>Вы добавили этот номер (или один из номеров) в стоп-лист.</summary>
         BlacklistedRecepient = 209,
         /// <summary>Используется GET, где необходимо использовать POST.</summary>
-        ShouldUsePOST = 210,
+        ShouldUsePost = 210,
         /// <summary>Метод не найден.</summary>
         MethodNotFound = 211,
         /// <summary>Текст сообщения необходимо передать в кодировке UTF-8 (вы передали в другой кодировке)</summary>
@@ -69,7 +69,7 @@
         CreditMessageWrongFormat = 217,
         /// <summary>Сервис временно недоступен, попробуйте чуть позже</summary>
         ServiceIsUnavailable = 220,
-        /// <summary>Для работы с нашим сервисом, необходимо создать буквенного отправителя, соответствующего вашему сайту, названию юр. лица или товарному знаку - https://sms.ru/?panel=senders</summary>
+        /// <summary>Для работы с нашим сервисом, необходимо создать буквенного отправителя, соответствующего вашему сайту, названию юр лица или товарному знаку - https://sms.ru/?panel=senders</summary>
         LettersSenderNotFound = 221,
         /// <summary>Сообщение не принято к отправке, так как на один номер в день нельзя отправлять более 100 сообщений.</summary>
         DayMessageLimitToNumber = 230,
@@ -94,26 +94,86 @@
         /// <summary>Ошибка на сервере. Повторите запрос.</summary>
         ServerError = 500,
         /// <summary>Превышен лимит: IP пользователя из сети TOR, слишком много таких сообщений за короткий промежуток времени (можно настроить в ЛК).</summary>
-        UserFromTOR = 501,
+        UserFromTor = 501,
         /// <summary>Превышен лимит: IP пользователя не совпадает с его страной, слишком много таких сообщений за короткий промежуток времени (можно настроить в ЛК).</summary>
-        IPNotMatchCountry = 502,
+        IpNotMatchCountry = 502,
         /// <summary>Превышен лимит: Слишком много сообщений в эту страну за короткий промежуток времени (можно настроить в ЛК).</summary>
         TooMuchMessagesToThisCountry = 503,
         /// <summary>Превышен лимит: Слишком много кодов авторизаций зарубеж за короткий промежуток времени (можно настроить в ЛК).</summary>
         TooMuchVerificationCodesToAbroad = 504,
         /// <summary>Превышен лимит: Слишком много сообщений на один IP адрес (можно настроить в ЛК).</summary>
-        TooMuchMessagesToThisIP = 505,
+        TooMuchMessagesToThisIp = 505,
         /// <summary>Превышен лимит: Слишком много сообщений, где IP адрес конечного пользователя принадлежит хостинговой компании (%s за последние 10 минут). Обычно это указывает на то, что запросы идут от ботов, а не пользователей.</summary>
         MessagesFromBots = 506,
         /// <summary>IP адрес пользователя указан неверно, либо идет из частной подсети (192.*, 10.*, итд). Вы можете добавить его (или подсеть) в исключения</summary>
-        WrongIPAddress = 507,
+        WrongIpAddress = 507,
         /// <summary>Превышен лимит: Превышено количество допустимых звонков за 5 минут (принято запросов на звонки - %s, лимит - %s)</summary>
         TooMuchPhoneCalls = 508,
         /// <summary>Страна заблокирована в целях безопасности</summary>
         CountryBlocked = 550,
         /// <summary>Callback: URL неверный (не начинается на http://)</summary>
-        WrongURL = 901,
+        WrongUrl = 901,
         /// <summary>Callback: Обработчик не найден (возможно был удален ранее)</summary>
         HandlerNotFound = 902
+    }
+    /// <summary>
+    /// Конвертер статус кодов sms.ru в Http статус коды
+    /// </summary>
+    public class SmsRuStatusCodeConverter
+    {
+        /// <summary>
+        /// Конвертирует int значение статус кода сервиса sms.ru в ассоциируемый http статус код
+        /// </summary>
+        /// <param name="smsruCode">Статус код sms.ru</param>
+        /// <returns>int значение Http статус кода</returns>
+        public static int GetHttpStatusCode(int smsruCode) => smsruCode switch
+        {
+            >= 100 and < 104 => StatusCodes.Status200OK,
+            104 => StatusCodes.Status408RequestTimeout,
+            105 => StatusCodes.Status410Gone,
+            106 => StatusCodes.Status500InternalServerError,
+            107 => StatusCodes.Status409Conflict, //??
+            108 => StatusCodes.Status406NotAcceptable,
+            150 => StatusCodes.Status421MisdirectedRequest,
+            200 => StatusCodes.Status401Unauthorized,
+            201 => StatusCodes.Status402PaymentRequired,
+            202 => StatusCodes.Status421MisdirectedRequest,
+            203 => StatusCodes.Status400BadRequest,
+            204 => StatusCodes.Status451UnavailableForLegalReasons,
+            205 => StatusCodes.Status413RequestEntityTooLarge,
+            206 => StatusCodes.Status429TooManyRequests,
+            207 => StatusCodes.Status416RequestedRangeNotSatisfiable,
+            208 => StatusCodes.Status400BadRequest,
+            209 => StatusCodes.Status409Conflict,
+            210 => StatusCodes.Status400BadRequest,
+            211 => StatusCodes.Status404NotFound,
+            212 => StatusCodes.Status415UnsupportedMediaType,
+            213 => StatusCodes.Status413PayloadTooLarge,
+            214 => StatusCodes.Status403Forbidden,
+            215 => StatusCodes.Status423Locked,
+            216 or 217 => StatusCodes.Status406NotAcceptable,
+            220 => StatusCodes.Status503ServiceUnavailable,
+            221 => StatusCodes.Status412PreconditionFailed,
+            >= 230 and <= 233 => StatusCodes.Status429TooManyRequests,
+            300 or 301 => StatusCodes.Status401Unauthorized,
+            302 => StatusCodes.Status403Forbidden,
+            303 => StatusCodes.Status409Conflict,
+            304 or 305 => StatusCodes.Status429TooManyRequests,
+            500 => StatusCodes.Status500InternalServerError,
+            501 or 502 => StatusCodes.Status407ProxyAuthenticationRequired,
+            >= 503 and <= 506 => StatusCodes.Status429TooManyRequests,
+            507 => StatusCodes.Status421MisdirectedRequest,
+            508 => StatusCodes.Status429TooManyRequests,
+            550 => StatusCodes.Status451UnavailableForLegalReasons,
+            901 => StatusCodes.Status400BadRequest,
+            902 => StatusCodes.Status405MethodNotAllowed,
+            _ => StatusCodes.Status500InternalServerError
+        };
+        /// <summary>
+        /// Конвертирует enum значение статус кода сервиса sms.ru в ассоциируемый http статус код
+        /// </summary>
+        /// <param name="code">Статус код sms.ru</param>
+        /// <returns>int значение Http статус кода</returns>
+        public static int GetHttpStatusCode(ResponseOnSendRequest code) => GetHttpStatusCode((int)code);
     }
 }
