@@ -1,16 +1,12 @@
 using MediatR;
 using MessageSenderService.CQRS;
 using MessageSenderService.Model.Interfaces;
-using MessageSenderService.Model.Middleware;
+using MessageSenderService.Model.MiddleWare;
 using MessageSenderService.Model.ResponseClass;
 using MessageSenderService.Model.Services;
 using MessageSenderService.Model.Validators;
-using Microsoft.AspNetCore.Authentication.Certificate;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Scalar.AspNetCore;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 
 namespace MessageSenderService
 {
@@ -18,84 +14,25 @@ namespace MessageSenderService
     {
         public static async Task Main(string[] args)
         {
-            //var builder = WebApplication.CreateBuilder(args);
             var builder = WebApplication.CreateBuilder(args);
-            /*
-            //Загрузка сертификата
-            var store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
-            store.Open(OpenFlags.ReadOnly);
-            var certificate = store.Certificates.OfType<X509Certificate2>()
-                .First(c => c.FriendlyName == "Test Certificate");
-            store.Close();
 
+            // Add services to the container.
+            
+            //Р”РѕР±Р°РІР»РµРЅРёРµ РѕР±СЂР°Р±РѕС‚С‡РёРєР° РІР°Р»РёРґР°С‚РѕСЂРѕРІ
+            _ = builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidatorBehavior<,>));
 
-            //builder.WebHost.UseKestrel(options =>
-            //{
-            //    options.Listen(System.Net.IPAddress.Loopback, 44321, listenOptions =>
-            //    {
-            //        var connectionOptions = new HttpsConnectionAdapterOptions() 
-            //        { 
-            //            ServerCertificate = certificate
-            //        };
-            //        listenOptions.UseHttps(connectionOptions);
-            //    });
-            //});
-
-
-            // Add services to the container
-            builder.Services.AddScoped<ICertificateValidationService, CertificateValidationService>();
-
-            builder.Services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddCertificate(options => 
-            {
-                options.AllowedCertificateTypes = CertificateTypes.SelfSigned;
-                options.Events = new CertificateAuthenticationEvents()
-                {
-                    OnCertificateValidated = context =>
-                    {
-                        var validationService = context.HttpContext.RequestServices.GetService<ICertificateValidationService>();
-
-                        if (validationService.ValidateCertificate(context.ClientCertificate))
-                            context.Success();
-                        else
-                            context.Fail("invalid Certificate");
-
-                        return Task.CompletedTask;
-                    },
-                    OnAuthenticationFailed = context =>
-                    {
-                        context.Fail("invalid Certificate");
-                        return Task.CompletedTask;
-                    }
-                };
-
-            });
-
-            builder.Services.Configure<KestrelServerOptions>(options => 
-            {
-                options.ConfigureHttpsDefaults(options =>
-                {
-                    options.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
-                });
-            });
-            */
-
-            //Добавление обработчика валидаторов
-            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidatorBehavior<,>));
-
-            //Добавление медиатора
-            builder.Services.AddMediatR(cfg =>
+            //Р”РѕР±Р°РІР»РµРЅРёРµ РјРµРґРёР°С‚РѕСЂР°
+            _ = builder.Services.AddMediatR(cfg =>
             {
                 cfg.RegisterGenericHandlers = true;
                 cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly());
             });
 
-            //Добавление самого сервиса отправки сообщений
-            builder.Services.AddScoped<IMessageSender, MessageSender>();
+            //Р”РѕР±Р°РІР»РµРЅРёРµ СЃР°РјРѕРіРѕ СЃРµСЂРІРёСЃР° РѕС‚РїСЂР°РІРєРё СЃРѕРѕР±С‰РµРЅРёР№
+            _ = builder.Services.AddScoped<IMessageSender, MessageSender>();
 
-            
-
-            //Добавление синглтона клиента для отправки сообщения через sms.ru
-            builder.Services.AddSingleton<HttpClient>(_ =>
+            //Р”РѕР±Р°РІР»РµРЅРёРµ СЃРёРЅРіР»С‚РѕРЅР° РєР»РёРµРЅС‚Р° РґР»СЏ РѕС‚РїСЂР°РІРєРё СЃРѕРѕР±С‰РµРЅРёСЏ С‡РµСЂРµР· sms.ru
+            _ = builder.Services.AddSingleton<HttpClient>(_ =>
             {
                 var httpClient = new HttpClient
                 {
@@ -104,32 +41,30 @@ namespace MessageSenderService
                 return httpClient;
             });
 
-            //Добавление валидатора для комманды
-            builder.Services.AddTransient<IValidator<SendMessageCommand<SendMessageResult>>, ValidatorSendMessageCommand<SendMessageResult>>();
+            //Р”РѕР±Р°РІР»РµРЅРёРµ РІР°Р»РёРґР°С‚РѕСЂР° РґР»СЏ РєРѕРјРјР°РЅРґС‹
+            _ = builder.Services.AddTransient<IValidator<SendMessageCommand<SendMessageResponse>>, ValidatorSendMessageCommand<SendMessageResponse>>();
 
-            builder.Services.AddControllers();
+            _ = builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+            _ = builder.Services.AddOpenApi();
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapScalarApiReference();
-                app.MapOpenApi();
+                _ = app.MapScalarApiReference();
+                _ = app.MapOpenApi();
             }
-            
-            app.UseHttpsRedirection();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+            _ = app.UseHttpsRedirection();
 
-            //Использование глобального отловщика ошибок
-            app.UseMiddleware<GlobalExceptionMiddleWare>();
-            //app.UseMiddleware<MiddlewareTest>();
+            _ = app.UseAuthorization();
 
-            app.MapControllers();
+            //РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РіР»РѕР±Р°Р»СЊРЅРѕРіРѕ РѕС‚Р»РѕРІС‰РёРєР° РѕС€РёР±РѕРє
+            _ = app.UseMiddleware<GlobalExceptionMiddleWare>();
+
+            _ = app.MapControllers();
 
             await app.RunAsync();
         }

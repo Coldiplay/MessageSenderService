@@ -4,16 +4,13 @@ using System.Text.Json.Serialization;
 
 namespace MessageSenderService.Model.ResponseClass
 {
-    public class SendMessageResult : IResponseResult
+    public class SendMessageResponse : IResponseResult
     {
-
         [JsonPropertyName("status")]
         public string Status { get; set; } = "ERROR";
         [JsonPropertyName("status_code")]
-        //public ResponseOnSendRequest StatusCode { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public int StatusCode { get; set; }
         [JsonPropertyName("sms")]
-
         public Dictionary<string, PhoneMessageResult> PhonesMessageResults { get; set; } = [];
         [JsonPropertyName("balance")]
         public double Balance { get; set; }
@@ -31,7 +28,27 @@ namespace MessageSenderService.Model.ResponseClass
 
         public string ConvertToMessage()
         {
-            throw new NotImplementedException();
+            return string.Empty;
         }
     }
+
+    public class PhoneMessageResult : IResponseResult
+    {
+        [JsonPropertyName("status")]
+        public string Status { get; set; } = "ERROR";
+        [JsonPropertyName("status_code")]
+        public int StatusCode { get; set; }
+        [JsonPropertyName("sms_id")]
+        public string? SmsId { get; set; } = null;
+        [JsonPropertyName("status_text")]
+        public string? StatusText { get; set; } = null;
+
+        public int GetHttpStatusCode => SmsRuStatusCodeConverter.GetHttpStatusCode(StatusCode);
+
+        public string ConvertToMessage()
+        {
+            return string.Empty;
+        }
+    }
+
 }

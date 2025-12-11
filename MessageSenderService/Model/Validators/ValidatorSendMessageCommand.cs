@@ -9,6 +9,8 @@ namespace MessageSenderService.Model.Validators
     /// </summary>
     public class ValidatorSendMessageCommand<TResponse> : IValidator<SendMessageCommand<TResponse>> where TResponse : IResponseResult, new()
     {
+        private static readonly Regex phoneRegex = new(@"^(?:\+?)(?:[1-9])(?:\s?)(?:\(?)(?<AreaCode>\d{3})(?:[\).\s]?)(?<Prefix>\d{3})(?:[-\.\s]?)(?<Suffix>\d{4})(?!\d)", RegexOptions.Compiled);
+
         /// <summary>
         /// Валидируем комманду отправки сообщения
         /// </summary>
@@ -36,7 +38,8 @@ namespace MessageSenderService.Model.Validators
              * 7 123.456.7890
              * 7(123)456-7890
             */
-            if (!Regex.IsMatch(request.Telephone, @"^(?:\+?)(?:[1-9])(?:\s?)(?:\(?)(?<AreaCode>\d{3})(?:[\).\s]?)(?<Prefix>\d{3})(?:[-\.\s]?)(?<Suffix>\d{4})(?!\d)"))
+            // TODO: добавить вариацию без +7 или 7 (ну и подобных цифр)
+            if (!phoneRegex.IsMatch(request.Telephone))
                     fails.Add("Неверно введён телефон");
             else
                 //Если телефон был принят, то просто убираем символ +, принимая только цифры

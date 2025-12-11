@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36705.20
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageSenderService", "MessageSenderService\MessageSenderService.csproj", "{1FF6EBFB-54CB-47CC-B86A-63179B04D608}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestField", "TestField\TestField.csproj", "{FBA0FD7C-9A75-4B77-9649-01BDFC64FF24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{1FF6EBFB-54CB-47CC-B86A-63179B04D608}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FF6EBFB-54CB-47CC-B86A-63179B04D608}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FF6EBFB-54CB-47CC-B86A-63179B04D608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBA0FD7C-9A75-4B77-9649-01BDFC64FF24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBA0FD7C-9A75-4B77-9649-01BDFC64FF24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBA0FD7C-9A75-4B77-9649-01BDFC64FF24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBA0FD7C-9A75-4B77-9649-01BDFC64FF24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

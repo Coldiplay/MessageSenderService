@@ -7,27 +7,22 @@ namespace MessageSenderService.Model.Validators
     /// <summary>
     /// Обработчик валидаторов
     /// </summary>
-    public class ValidatorBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+    public class ValidatorBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators) 
+        : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
-        private readonly IEnumerable<IValidator<TRequest>> _validators;
-        public ValidatorBehavior(IEnumerable<IValidator<TRequest>> validators) 
-        {
-            _validators = validators;
-        }
-
         /// <summary>
         /// Метод обрабатывающий запрос
         /// </summary>
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
             //Если нет валидаторов, то просто запускаем следующий запрос
-            if (!_validators.Any())
+            if (!validators.Any())
                 return await next();
 
             //Список ошибок для вывода
             List<string> failures = [];
 
-            foreach (var validator in _validators)
+            foreach (var validator in validators)
             {
                 //На каждом валидаторе проверяем запросы
                 var failuresInValidator = await validator.ValidateAsync(request, cancellationToken);

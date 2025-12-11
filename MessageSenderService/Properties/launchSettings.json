@@ -6,8 +6,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "SMS_API_KEY": "5753D32B-35C2-E394-7157-A20BD70B99A8",
         "AUTHENTIFICATION_KEY": "jkdfenlrhtbvgVZHDMDGRYBWEKUYGRW",
-        "SMS_BASE_ADDRESS": "https://sms.ru/",
-        "CERTIFICATE_NAME": "Test Certificate"
+        "SMS_BASE_ADDRESS": "https://sms.ru/"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5202"
@@ -18,8 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "SMS_API_KEY": "5753D32B-35C2-E394-7157-A20BD70B99A8",
         "AUTHENTIFICATION_KEY": "jkdfenlrhtbvgVZHDMDGRYBWEKUYGRW",
-        "SMS_BASE_ADDRESS": "https://sms.ru/",
-        "CERTIFICATE_NAME": "Test Certificate"
+        "SMS_BASE_ADDRESS": "https://sms.ru/"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7280;http://localhost:5202"
@@ -31,7 +29,6 @@
         "SMS_API_KEY": "5753D32B-35C2-E394-7157-A20BD70B99A8",
         "AUTHENTIFICATION_KEY": "jkdfenlrhtbvgVZHDMDGRYBWEKUYGRW",
         "SMS_BASE_ADDRESS": "https://sms.ru/",
-        "CERTIFICATE_NAME": "Test Certificate",
         "ASPNETCORE_HTTPS_PORTS": "8081",
         "ASPNETCORE_HTTP_PORTS": "8080"
       },

@@ -1,4 +1,4 @@
-﻿namespace MessageSenderService.Model.Enums
+namespace MessageSenderService.Model.Enums
 {
     /// <summary>
     /// Коды ответов при отправке СМС сообщения одному или нескольким получателям.
@@ -31,7 +31,7 @@
         /// <summary>Не может быть доставлено: не найден маршрут на данный номер</summary>
         NotFoundWayToPhone = 150,
         /// <summary>Неправильный api_id.</summary>
-        WrongId = 200,
+        WrongID = 200,
         /// <summary>Не хватает средств на лицевом счету.</summary>
         OutOfMoney = 201,
         /// <summary>Неправильно указан получатель.</summary>
@@ -51,7 +51,7 @@
         /// <summary>Вы добавили этот номер (или один из номеров) в стоп-лист.</summary>
         BlacklistedRecepient = 209,
         /// <summary>Используется GET, где необходимо использовать POST.</summary>
-        ShouldUsePost = 210,
+        ShouldUsePOST = 210,
         /// <summary>Метод не найден.</summary>
         MethodNotFound = 211,
         /// <summary>Текст сообщения необходимо передать в кодировке UTF-8 (вы передали в другой кодировке)</summary>
@@ -69,7 +69,7 @@
         CreditMessageWrongFormat = 217,
         /// <summary>Сервис временно недоступен, попробуйте чуть позже</summary>
         ServiceIsUnavailable = 220,
-        /// <summary>Для работы с нашим сервисом, необходимо создать буквенного отправителя, соответствующего вашему сайту, названию юр лица или товарному знаку - https://sms.ru/?panel=senders</summary>
+        /// <summary>Для работы с нашим сервисом, необходимо создать буквенного отправителя, соответствующего вашему сайту, названию юр. лица или товарному знаку - https://sms.ru/?panel=senders</summary>
         LettersSenderNotFound = 221,
         /// <summary>Сообщение не принято к отправке, так как на один номер в день нельзя отправлять более 100 сообщений.</summary>
         DayMessageLimitToNumber = 230,
@@ -94,31 +94,28 @@
         /// <summary>Ошибка на сервере. Повторите запрос.</summary>
         ServerError = 500,
         /// <summary>Превышен лимит: IP пользователя из сети TOR, слишком много таких сообщений за короткий промежуток времени (можно настроить в ЛК).</summary>
-        UserFromTor = 501,
+        UserFromTOR = 501,
         /// <summary>Превышен лимит: IP пользователя не совпадает с его страной, слишком много таких сообщений за короткий промежуток времени (можно настроить в ЛК).</summary>
-        IpNotMatchCountry = 502,
+        IPNotMatchCountry = 502,
         /// <summary>Превышен лимит: Слишком много сообщений в эту страну за короткий промежуток времени (можно настроить в ЛК).</summary>
         TooMuchMessagesToThisCountry = 503,
         /// <summary>Превышен лимит: Слишком много кодов авторизаций зарубеж за короткий промежуток времени (можно настроить в ЛК).</summary>
         TooMuchVerificationCodesToAbroad = 504,
         /// <summary>Превышен лимит: Слишком много сообщений на один IP адрес (можно настроить в ЛК).</summary>
-        TooMuchMessagesToThisIp = 505,
+        TooMuchMessagesToThisIP = 505,
         /// <summary>Превышен лимит: Слишком много сообщений, где IP адрес конечного пользователя принадлежит хостинговой компании (%s за последние 10 минут). Обычно это указывает на то, что запросы идут от ботов, а не пользователей.</summary>
         MessagesFromBots = 506,
         /// <summary>IP адрес пользователя указан неверно, либо идет из частной подсети (192.*, 10.*, итд). Вы можете добавить его (или подсеть) в исключения</summary>
-        WrongIpAddress = 507,
+        WrongIPAddress = 507,
         /// <summary>Превышен лимит: Превышено количество допустимых звонков за 5 минут (принято запросов на звонки - %s, лимит - %s)</summary>
         TooMuchPhoneCalls = 508,
         /// <summary>Страна заблокирована в целях безопасности</summary>
         CountryBlocked = 550,
         /// <summary>Callback: URL неверный (не начинается на http://)</summary>
-        WrongUrl = 901,
+        WrongURL = 901,
         /// <summary>Callback: Обработчик не найден (возможно был удален ранее)</summary>
         HandlerNotFound = 902
     }
-    /// <summary>
-    /// Конвертер статус кодов sms.ru в Http статус коды
-    /// </summary>
     public class SmsRuStatusCodeConverter
     {
         /// <summary>

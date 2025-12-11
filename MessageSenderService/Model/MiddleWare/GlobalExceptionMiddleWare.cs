@@ -1,25 +1,27 @@
-﻿using MessageSenderService.Model.Interfaces;
+using MessageSenderService.Model.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
-namespace MessageSenderService.Model.Middleware
+namespace MessageSenderService.Model.MiddleWare
 {
     /// <summary>
     /// Класс для отловли ошибок происходящих в запросах
     /// </summary>
     /// <param name="request">Делегат запроса</param>
-    /// <param name="environment">Окружение программы</param>
-    /// <param name="logger">Логгер для логирования в консоль</param>
-    public class GlobalExceptionMiddleWare(RequestDelegate request, 
-        IWebHostEnvironment environment, 
-        ILogger<GlobalExceptionMiddleWare> logger) 
-        : MiddlewareBase(request, environment, logger), IExceptionMiddleWare
+    /// <param name="environment">Окружение запроса</param>
+    /// <param name="logger">Логгер для логгирования в консоль</param>
+    public class GlobalExceptionMiddleWare(RequestDelegate request, IWebHostEnvironment environment, ILogger<GlobalExceptionMiddleWare> logger) : IExceptionMiddleWare
     {
+        private readonly RequestDelegate _requestDelegate = request;
+        private readonly IWebHostEnvironment _environment = environment;
+        private readonly ILogger<GlobalExceptionMiddleWare> _logger = logger;
+
         public static int GetErrorCode(Exception exception) => exception switch
         {
-            CustomException customException => customException.ErrorCode,
             UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
             KeyNotFoundException => StatusCodes.Status404NotFound,
-            ArgumentException or ValidationException => StatusCodes.Status400BadRequest,
+            ArgumentException => StatusCodes.Status400BadRequest,
+            ValidationException => StatusCodes.Status400BadRequest,
+            CustomException ex => ex.ErrorCode,
             _ => StatusCodes.Status500InternalServerError
         };
 
@@ -29,45 +31,66 @@ namespace MessageSenderService.Model.Middleware
             KeyNotFoundException => "Запрашиваемый ресурс не найден.",
             ArgumentException => "Некорректные входные данные.",
             ValidationException => "Ошибка валидации данных.",
-            CustomException customException => customException.ErrorMessage,
+            CustomException ex => ex.ErrorMessage, 
             _ => "Произошла внутренняя ошибка сервера."
         };
 
         public static async Task HandleExceptionAsync(HttpContext httpContext, Exception exception, bool isDevelopment)
         {
-            int code = GetErrorCode(exception);
+            int errorCode = GetErrorCode(exception);
             string errorMessage = GetErrorMessage(exception);
             //Задаём ответу статус код
-            httpContext.Response.StatusCode = code;
+            httpContext.Response.StatusCode = errorCode;
 
             //Создаём анонимный класс для превращения его в json для тела ответа
-            var response = new 
+            var response = new
             {
-                code,
+                errorCode,
                 errorMessage,
-                details = exception.Message
+                details = isDevelopment ? exception.Message : null
             };
             
-            //Отправляем тело ответа
+            //Записываем ошибку в тело ответа
             await httpContext.Response.WriteAsJsonAsync(response);
         }
 
-        public override async Task InvokeAsync(HttpContext httpContext)//, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext httpContext)
         {
             try
             {
                 // Пробуем запустить запрос в контексте
-                await request.Invoke(httpContext);
+                await _requestDelegate.Invoke(httpContext);
             }
             //Отлавливаем возможную ошибку
             catch (Exception ex)
             {
-                //Логируем ошибку в консоль
-                logger.LogError(ex, "Произошла непредвиденная ошибка. {httpContext.Request.Method} {httpContext.Request.Path}",
-                    httpContext.Request.Method, httpContext.Request.Path);
+
+                string message = ex switch
+                {
+                    UnauthorizedAccessException => "Произошёл запрос от неаутентифицированного пользователя",
+                    KeyNotFoundException => "Пользователь не нашёл запрашиваемый ресурс",
+                    ArgumentException => "Пользователь ввёл некорректные входные данные",
+                    ValidationException => "Данные пользователя не прошли валидацию",
+                    CustomException e => e.ErrorMessage, // Пока так 
+                    _ => $"Произошла непредвиденная ошибка, трассировка: {ex}"
+                };
+
+                var severity = GetSeveretyOfError(ex);
+                //Логгируем ошибку в консоль
+                _logger.Log(severity, "MiddleWare поймал ошибку в выполнении запроса пользователя {0} в методе {1} {2}, ошибка: {3}", httpContext.Connection.RemoteIpAddress, httpContext.Request.Method, httpContext.Request.Path, message);
                 //Запускаем метод для отправки ошибки клиенту
-                await HandleExceptionAsync(httpContext, ex, environment.IsDevelopment());
+                await HandleExceptionAsync(httpContext, ex, _environment.IsDevelopment());
             }
         }
+
+        private static LogLevel GetSeveretyOfError(Exception exception) => exception switch
+        {
+            UnauthorizedAccessException or 
+            KeyNotFoundException or 
+            ArgumentException or 
+            ValidationException => LogLevel.Information,
+            CustomException ex => ex.ErrorCode >= 500 ? LogLevel.Error : LogLevel.Information,
+            _ => LogLevel.Error
+        };
     }
 }

@@ -10,6 +10,7 @@ namespace MessageSenderService.Model.ResponseClass
         [JsonPropertyName("status_code")]
         public int StatusCode { get; set; }
         public double Balance { get; set; }
+        [JsonIgnore]
         public int GetHttpStatusCode => SmsRuStatusCodeConverter.GetHttpStatusCode(StatusCode);
 
         public string ConvertToMessage()

@@ -4,10 +4,9 @@
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
-ENV SMS_API_KEY = "yourKey"
-ENV AUTHENTIFICATION_KEY = "keyForAuthToAPI"
-ENV SMS_BASE_ADDRESS "https://sms.ru/"
-ENV CERTIFICATE_NAME = "Test Certificate"
+ENV SMS_API_KEY
+ENV AUTHENTIFICATION_KEY
+ENV SMS_BASE_ADDRESS https://sms.ru/
 EXPOSE 8080
 EXPOSE 8081
 
@@ -20,27 +19,24 @@ COPY ["MessageSenderService/MessageSenderService.csproj", "MessageSenderService/
 RUN dotnet restore "./MessageSenderService/MessageSenderService.csproj"
 COPY . .
 WORKDIR "/src/MessageSenderService"
-ENV SMS_API_KEY = "yourKey"
-ENV AUTHENTIFICATION_KEY = "keyForAuthToAPI"
-ENV SMS_BASE_ADDRESS "https://sms.ru/"
-ENV CERTIFICATE_NAME = "Test Certificate"
+ENV SMS_API_KEY
+ENV AUTHENTIFICATION_KEY
+ENV SMS_BASE_ADDRESS https://sms.ru/
 RUN dotnet build "./MessageSenderService.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Этот этап используется для публикации проекта службы, который будет скопирован на последний этап
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-ENV SMS_API_KEY = "yourKey"
-ENV AUTHENTIFICATION_KEY = "keyForAuthToAPI"
-ENV SMS_BASE_ADDRESS "https://sms.ru/"
-ENV CERTIFICATE_NAME = "Test Certificate"
+ENV SMS_API_KEY
+ENV AUTHENTIFICATION_KEY
+ENV SMS_BASE_ADDRESS https://sms.ru/
 RUN dotnet publish "./MessageSenderService.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Этот этап используется в рабочей среде или при запуске из VS в обычном режиме (по умолчанию, когда конфигурация отладки не используется)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENV SMS_API_KEY = "yourKey"
-ENV AUTHENTIFICATION_KEY = "keyForAuthToAPI"
-ENV SMS_BASE_ADDRESS "https://sms.ru/"
-ENV CERTIFICATE_NAME = "Test Certificate"
+ENV SMS_API_KEY
+ENV AUTHENTIFICATE_KEY
+ENV SMS_BASE_ADRESS https://sms.ru/
 ENTRYPOINT ["dotnet", "MessageSenderService.dll"]
